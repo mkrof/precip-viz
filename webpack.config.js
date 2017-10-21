@@ -13,7 +13,8 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
-      title: 'precip-viz'
+      title: 'precip-viz',
+      template: './src/app.html'
     })
   ],
   output: {
