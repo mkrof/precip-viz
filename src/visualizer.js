@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 export function render (dataCollection) {
   const margin = {
     top: 20,
-    right: 20,
+    right: 100,
     bottom: 30,
     left: 50
   };
@@ -11,9 +11,11 @@ export function render (dataCollection) {
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
   const parseTime = d3.timeParse('%Y%m');
+  const displayYear = d3.timeFormat('%Y');
 
+  const yPad = 10;
   const x = d3.scaleTime().range([0, width]);
-  const y = d3.scaleLinear().range([height, 0]);
+  const y = d3.scaleLinear().range([height - yPad, yPad]);
 
   const line = d3.line()
     .x(d => x(d.date))
@@ -33,19 +35,54 @@ export function render (dataCollection) {
   data.forEach(d => d.date = parseTime(d.date));
 
   x.domain(d3.extent(data, d => d.date));
-  y.domain([d3.min(data, d => d.value), d3.max(data, d => d.value)]);
+  y.domain([Math.floor(d3.min(data, d => d.value)), Math.ceil(d3.max(data, d => d.value))]);
+
+  svg.append('g')
+    .attr('transform', `translate(0, ${height})`)
+    .attr('class', 'x axis')
+    .call(d3.axisBottom(x).tickSize(-height, -height, -height));
+
+  svg.append('g')
+    .attr('class', 'y axis')
+    .call(d3.axisLeft(y).tickSize(-width, -width, -width));
 
   svg.append('path')
     .data([data])
     .attr('class', 'line')
     .attr('d', line);
 
-  svg.append('g')
-    .attr('transform', `translate(0, ${height})`)
-    .call(d3.axisBottom(x));
 
-  svg.append('g')
-    .call(d3.axisLeft(y))
+  const focus = svg.append('g')
+    .attr('class', 'focus')
+    .style('display', 'none');
+
+  focus.append('circle')
+    .attr('r', 4.5)
+
+  focus.append('text')
+    .attr('x', 9)
+    .attr('dy', '.35em');
+
+  svg.append('rect')
+    .attr('class', 'overlay')
+    .attr('width', width)
+    .attr('height', height)
+    .on('mouseover', () => focus.style('display', null))
+    .on('mouseout', () => focus.style('display', 'none'))
+    .on('mousemove', onMouseMove);
+
+  const bisectDate = d3.bisector(d => d.date).left;
+
+  function onMouseMove () {
+    const x0 = x.invert(d3.mouse(this)[0]);
+    const i = bisectDate(data, x0, 1);
+    const d0 = data[i - 1];
+    const d1 = data[i];
+    const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+    focus.attr('transform', `translate(${x(d.date)},${y(d.value)})`)
+      .select('text')
+      .text(`${displayYear(d.date)}: ${d.value}`);
+  }
 
   console.log(data);
 

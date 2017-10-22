@@ -1,9 +1,30 @@
 <html>
   <style>
+    body {
+      font: 12px sans-serif;
+    }
     .line {
+      fill: none;
+      stroke: #32D1D1;
+      stroke-width: 2px;
+    }
+    .overlay {
+      fill: none;
+      pointer-events: all
+    }
+    .focus circle {
       fill: none;
       stroke: #FF8800;
       stroke-width: 2px;
+    }
+    .x.axis line, .y.axis line {
+      stroke: #CDCDCD;
+    }
+    .x.axis path {
+      display: none;
+    }
+    .y.axis path {
+      display: none;
     }
   </style>
   <body>
