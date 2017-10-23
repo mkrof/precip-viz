@@ -45,7 +45,11 @@ export function render (dataCollection) {
 
   svg.append('g')
     .attr('class', 'y axis')
-    .call(d3.axisLeft(y).tickSize(-width, -width, -width));
+    .call(
+      d3.axisLeft(y)
+        .tickSize(-width, -width, -width)
+        .tickFormat(txt => `${txt}"`)
+    );
 
   svg.append('path')
     .data([data])
@@ -81,7 +85,7 @@ export function render (dataCollection) {
     const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
     focus.attr('transform', `translate(${x(d.date)},${y(d.value)})`)
       .select('text')
-      .text(`${displayYear(d.date)}: ${d.value}`);
+      .text(`${displayYear(d.date)}: ${d.value}"`);
   }
 
   const lr = linearRegression(data.map((d, i) => [++i, parseInt(d.value, 10)]));
