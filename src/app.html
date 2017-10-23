@@ -1,4 +1,9 @@
+<!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Precipitation Visualization</title>
+  </head>
   <style>
     body {
       font: 12px sans-serif;
@@ -6,6 +11,10 @@
     .line {
       fill: none;
       stroke: #32D1D1;
+      stroke-width: 2px;
+    }
+    .trend-line {
+      stroke: red;
       stroke-width: 2px;
     }
     .overlay {
@@ -20,13 +29,11 @@
     .x.axis line, .y.axis line {
       stroke: #CDCDCD;
     }
-    .x.axis path {
-      display: none;
-    }
-    .y.axis path {
+    .x.axis path, .y.axis path {
       display: none;
     }
   </style>
   <body>
+    <h1>Annual precipitation in the contiguous United States (inches)</h1>
   </body>
 </html>

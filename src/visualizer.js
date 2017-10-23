@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { linearRegression } from 'simple-statistics';
 
 export function render (dataCollection) {
   const margin = {
@@ -8,7 +9,7 @@ export function render (dataCollection) {
     left: 50
   };
 
-  const width = 960 - margin.left - margin.right;
+  const width = window.innerWidth - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
   const parseTime = d3.timeParse('%Y%m');
   const displayYear = d3.timeFormat('%Y');
@@ -51,7 +52,6 @@ export function render (dataCollection) {
     .attr('class', 'line')
     .attr('d', line);
 
-
   const focus = svg.append('g')
     .attr('class', 'focus')
     .style('display', 'none');
@@ -84,6 +84,20 @@ export function render (dataCollection) {
       .text(`${displayYear(d.date)}: ${d.value}`);
   }
 
-  console.log(data);
+  const lr = linearRegression(data.map((d, i) => [++i, parseInt(d.value, 10)]));
 
+  svg.selectAll('.trendline')
+    .data([[
+      data[0].date,
+      lr.m + lr.b,
+      data[data.length -1].date,
+      lr.m * data.length + lr.b
+    ]])
+    .enter()
+    .append('line')
+    .attr('class', 'trend-line')
+    .attr('x1', d => x(d[0]))
+    .attr('y1', d => y(d[1]))
+    .attr('x2', d => x(d[2]))
+    .attr('y2', d => y(d[3]));
 }
